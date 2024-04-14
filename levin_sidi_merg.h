@@ -116,7 +116,6 @@ protected:
 
 			rest = minus_one_raised_to_power_n(j) * binomial_coefficient(k, j);
 
-			T up = 1, down = 1;
 			for (int m = 0; m < k - 1; ++m) {
 				up *= (BETA + n + j + m);
 				down *= (BETA + n + k + m);

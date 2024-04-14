@@ -181,7 +181,7 @@ public:
 	u_levi_sidi_algorithm(const series_templ& series);
 
 	/**
-	* @brief Fast impimentation of Levin algorithm.
+	* @brief Impimentation of Levin-Sidi u S-transformation.
 	* Computes the partial sum after the transformation using the Levin-Sidi u S-transformation analogues to Levin u L-transformation
 	* For more information,
 	* @param k The number of terms in the partial sum.
@@ -210,7 +210,7 @@ public:
 	t_levi_sidi_algorithm(const series_templ& series);
 
 	/**
-	* @brief Fast impimentation of Levin-Sidi t S-tranformation.
+	* @brief Impimentation of Levin-Sidi t S-tranformation.
 	* Computes the partial sum after the transformation using the Levin-Sidi t S-transformation analogues to Levin t L-transformation
 	* t transformation is suitable for strictly alternating series, for more information see p. 43 in [https://arxiv.org/pdf/math/0306302.pdf]
 	* @param k The number of terms in the partial sum.
@@ -238,7 +238,7 @@ public:
 	v_levi_sidi_algorithm(const series_templ& series);
 
 	/**
-	* @brief Fast impimentation of Levin-Sidi v S-transformation.
+	* @brief Impimentation of Levin-Sidi v S-transformation.
 	* Computes the partial sum after the transformation using the Levin-Sidi v S-transformation analogues to Levinvt L-transformation
 	* for more information see p. 44 in [https://arxiv.org/pdf/math/0306302.pdf]
 	* @param k The number of terms in the partial sum.

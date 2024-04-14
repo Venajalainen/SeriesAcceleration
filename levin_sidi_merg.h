@@ -1,16 +1,13 @@
-﻿#pragma once
+﻿/**
+* @file levin_sidi_merg.h
+* @brief This files contains the definition of Levin-Sidi S-transformation with u,t,v remainders
+*/
+#pragma once
 #define DEF_UNDEFINED_SUM 0
-#define ZERO 1e-10
-#define BETA 1
+#define BETA 1 // beta is a a nonzero positive parameter, 1 is the standart value in the Literatur on Levin transformation, for more information see p. 39 in [https://arxiv.org/pdf/math/0306302.pdf]
+
 
 #include "series_acceleration.h" // Include the series header
-#include <vector> // Include the vector library
-
-/**
-  * @brief generalised Levi-Sidi class template.
-  * @authors Venajalainen
-  * @tparam T The type of the elements in the series, K The type of enumerating integer, series_templ is the type of series whose convergence we accelerate
-  */
 
 template<typename T, typename K, typename series_templ> class levi_sidi_algorithm;
 
@@ -22,6 +19,10 @@ template<typename T, typename K, typename series_templ> class v_levi_sidi_algori
 
 class u_transform {
 public:
+	/**
+	* @brief Default constructor for u type remainder calculator for S-tranformation, for more information see p. 43 7.3-4 in [https://arxiv.org/pdf/math/0306302.pdf]
+	* @authors Venajalainen
+	*/
 	u_transform() {}
 
 	template<typename T, typename K>
@@ -30,12 +31,16 @@ public:
 
 template<typename T, typename K>
 T u_transform::operator()(const int& n, const int& j, const series_base<T, K>* series) const {
-	return 1 / ((BETA + n) * series->operator()(n + j));
+	return 1 / ((BETA + n) * series->operator()(n + j + 1));
 }
 
 
 class t_transform {
 public:
+	/**
+	* @brief Default constructor for t type remainder calculator for S-tranformation, for more information see p. 60 8.4-4 in [https://arxiv.org/pdf/math/0306302.pdf]
+	* @authors Venajalainen
+	*/
 	t_transform() {}
 
 	template<typename T, typename K>
@@ -50,6 +55,10 @@ T t_transform::operator()(const int& n, const int& j, const series_base<T, K>* s
 
 class v_transform {
 public:
+	/**
+	* @brief Default constructor for v type remainder calculator for S-tranformation, for more information see p. 60 8.4-5 in [https://arxiv.org/pdf/math/0306302.pdf]
+	* @authors Venajalainen
+	*/
 	v_transform() {}
 
 	template<typename T, typename K>
@@ -66,6 +75,7 @@ template<typename T, typename K, typename series_templ>
 class levi_sidi_algorithm : public series_acceleration<T, K, series_templ>
 {
 protected:
+
 	T minus_one_raised_to_power_n(K n) const
 	{
 		return n % 2 ? -1 : 1;
@@ -80,11 +90,13 @@ protected:
 	}
 
 	/**
-	* @brief General function to calculate S-tranformation. Implemented u,t and v transformations
+	* @brief Default function to calculate S-tranformation. Implemented u,t and v transformations. For more information see p. 57 8.2-7 [https://arxiv.org/pdf/math/0306302.pdf]
+	* Levin-Sidi or Factorial analog of Levin Transformation is effective for series that belong to b(1)/LIN/FAC and inferior on b(1)/LOG for more information see p. 369 and p.285 [http://servidor.demec.ufpr.br/CFD/bibliografia/MER/Sidi_2003.pdf]
 	* @authors Venajalainen
 	* @param k The number of terms in the partial sum.
 	* @param n the order of transformation
-	* @param id the type of remainder to use in transformation
+	* @param remainder_func functor, whose returning w_n for t,u or v transformation
+	* @return The partial sum after the transformation.
 	*/
 
 	template<class remainderType>
@@ -119,13 +131,10 @@ protected:
 
 		}
 
-		if (std::abs(denominator) < ZERO)
-			throw std::overflow_error("division by zero");
+		numerator /= denominator;
 
 		if (!std::isfinite(numerator))
 			throw std::overflow_error("numerator is infinite");
-
-		numerator /= denominator;
 
 		return numerator;
 	}
@@ -138,9 +147,9 @@ public:
 
 
 	/**
-	* @brief Parameterized constructor to initialize the Levin Algorithm.
+	* @brief generalised Levi-Sidi class template for derevetions
 	* @authors Venajalainen
-	* @param series The series class object to be accelerated
+	* @tparam T The type of the elements in the series, K The type of enumerating integer, series_templ is the type of series whose convergence we accelerate
 	*/
 
 	levi_sidi_algorithm(const series_templ& series);
@@ -148,7 +157,6 @@ public:
 	/**
 	* @brief Abstract method for the inherited classes below
 	* Computes the partial sum after the transformation using the Levin Algorithm.
-	* For more information,
 	* @param k The number of terms in the partial sum.
 	* @param n The order of transformation.
 	* @return The partial sum after the transformation.
@@ -166,7 +174,7 @@ class u_levi_sidi_algorithm : public levi_sidi_algorithm<T, K, series_templ>
 {
 public:
 	/**
-	* @brief Parameterized constructor to initialize the Levin Algorithm.
+	* @brief Parameterized constructor to initialize the Levin-Sidi u S-transformation.
 	* @authors Venajalainen
 	* @param series The series class object to be accelerated
 	*/
@@ -174,7 +182,7 @@ public:
 
 	/**
 	* @brief Fast impimentation of Levin algorithm.
-	* Computes the partial sum after the transformation using the Levin Algorithm.
+	* Computes the partial sum after the transformation using the Levin-Sidi u S-transformation analogues to Levin u L-transformation
 	* For more information,
 	* @param k The number of terms in the partial sum.
 	* @param n The order of transformation.
@@ -195,16 +203,16 @@ class t_levi_sidi_algorithm : public levi_sidi_algorithm<T, K, series_templ>
 {
 public:
 	/**
-	* @brief Parameterized constructor to initialize the Levin Algorithm.
-	* @authors Naumov
+	* @brief Parameterized constructor to initialize the Levin-Sidi t S-transformation.
+	* @authors Venajalainen
 	* @param series The series class object to be accelerated
 	*/
 	t_levi_sidi_algorithm(const series_templ& series);
 
 	/**
-	* @brief Fast impimentation of Levin algorithm.
-	* Computes the partial sum after the transformation using the Levin Algorithm.
-	* For more information,
+	* @brief Fast impimentation of Levin-Sidi t S-tranformation.
+	* Computes the partial sum after the transformation using the Levin-Sidi t S-transformation analogues to Levin t L-transformation
+	* t transformation is suitable for strictly alternating series, for more information see p. 43 in [https://arxiv.org/pdf/math/0306302.pdf]
 	* @param k The number of terms in the partial sum.
 	* @param n The order of transformation.
 	* @return The partial sum after the transformation.
@@ -223,16 +231,16 @@ class v_levi_sidi_algorithm : public levi_sidi_algorithm<T, K, series_templ>
 {
 public:
 	/**
-	* @brief Parameterized constructor to initialize the Levin Algorithm.
-	* @authors Naumov
+	* @brief Parameterized constructor to initialize the Levin-Sidi v S-transformation.
+	* @authors Venajalainen
 	* @param series The series class object to be accelerated
 	*/
 	v_levi_sidi_algorithm(const series_templ& series);
 
 	/**
-	* @brief Fast impimentation of Levin algorithm.
-	* Computes the partial sum after the transformation using the Levin Algorithm.
-	* For more information,
+	* @brief Fast impimentation of Levin-Sidi v S-transformation.
+	* Computes the partial sum after the transformation using the Levin-Sidi v S-transformation analogues to Levinvt L-transformation
+	* for more information see p. 44 in [https://arxiv.org/pdf/math/0306302.pdf]
 	* @param k The number of terms in the partial sum.
 	* @param n The order of transformation.
 	* @param remainder is parametr to choose the form of a w_i

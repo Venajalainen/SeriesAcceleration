@@ -110,12 +110,13 @@ protected:
 
 		T numerator = T(0), denominator = T(0);
 		T w_n, rest;
-		T up = T(1), down = T(1);
+		T up, down;
 
 		for (int j = 0; j <= k; ++j) {
 
 			rest = minus_one_raised_to_power_n(j) * binomial_coefficient(k, j);
 
+			up = down = T(1);
 			for (int m = 0; m < k - 1; ++m) {
 				up *= (BETA + n + j + m);
 				down *= (BETA + n + k + m);
